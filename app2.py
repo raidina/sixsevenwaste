@@ -9,7 +9,7 @@ from sklearn.metrics import mean_squared_error, r2_score
 st.title("ระบบทำนายปริมาณขยะ")
 
 
-df = pd.read_csv('sustainable_waste_managemengt_dataset_2024.csv')
+df = pd.read_csv('sustainable_waste_management_dataset_2024.csv')
 
 features = ['population', 'temp_c', 'rain_mm', 'is_weekend', 'is_holiday', 'recycling_campaign']
 X = df[features]
