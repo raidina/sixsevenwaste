@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 
-# 1. Config & CSS (เน้นความสวยงาม กล่องขาว ตัวหนังสือเข้ม)
 st.set_page_config(page_title="Waste Wisdom AI", page_icon="♻️", layout="wide")
 st.markdown("""
     <style>
@@ -22,7 +21,6 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# 2. Load Data
 @st.cache_data
 def load_data():
     return pd.read_csv('sustainable_waste_management_dataset_2024.csv')
@@ -30,7 +28,6 @@ def load_data():
 df = load_data()
 global_avg = df['waste_kg'].mean()
 
-# 3. Sidebar
 with st.sidebar:
     st.image("https://cdn-icons-png.flaticon.com/512/3299/3299935.png", width=100)
     st.title("Waste Wisdom")
@@ -38,7 +35,6 @@ with st.sidebar:
     st.divider()
     st.metric("📊 ค่าเฉลี่ยรวมทุกพื้นที่", f"{global_avg:,.1f} กก.")
 
-# 4. Main Analytics Header
 area_df = df[df['area'] == selected_area].copy()
 area_avg = area_df['waste_kg'].mean()
 
@@ -52,7 +48,6 @@ m3.metric("อัตราขยะล้นถัง", f"{(area_df['overflow'].
 
 st.divider()
 
-# 5. กราฟแท่งคู่ (ซ้าย) และ ส่วนทำนาย (ขวา)
 col_chart, col_pred = st.columns([1.5, 1])
 
 with col_chart:
@@ -77,22 +72,18 @@ with col_pred:
         p_camp = st.toggle("เปิดแคมเปญแยกขยะ")
         
         if st.button("ประมวลผลด่วน"):
-            # ใช้การคำนวณทางสถิติพื้นฐาน (Base Rate + Population Factor)
             base_rate = area_avg / area_df['population'].mean()
             prediction = p_pop * base_rate
-            
-            # ปรับตามเงื่อนไข (Heuristics)
-            if p_rain > 50: prediction *= 1.1 # ฝนตกขยะเพิ่ม 10%
-            if p_temp > 35: prediction *= 1.05 # ร้อนจัดขยะเพิ่ม 5%
-            if p_camp: prediction *= 0.85 # แคมเปญลดขยะ 15%
+            if p_rain > 50: prediction *= 1.1 
+            if p_temp > 35: prediction *= 1.05
+            if p_camp: prediction *= 0.85
             
             st.success(f"**คาดการณ์:** {prediction:,.2f} กก.")
             if p_camp: st.balloons()
 
 st.divider()
-
-# 6. กราฟแนวโน้มขยะ 30 วันล่าสุด (แทนกราฟความแม่นยำ)
 st.subheader("📉 แนวโน้มปริมาณขยะ 30 วันล่าสุด")
+
 recent_df = area_df.tail(30).copy()
 st.line_chart(recent_df.set_index('date')['waste_kg'], color="#059669")
 
